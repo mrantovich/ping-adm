@@ -31,7 +31,7 @@ function server_ping() {
             HAS_ERROR+=($1)
             echo "Server $1 is DOWN!
 PING command ends with error.
-Please, check your server $1!" | mail -s "PING server error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
         fi
     # Если команда ping завершилась успешно (код ноль),
     # то проверяем наличие сервера в массиве HAS_ERROR,
@@ -41,7 +41,7 @@ Please, check your server $1!" | mail -s "PING server error" -r rms@dsk-stolica.
         DELETE=($1)
         if [[ " ${HAS_ERROR[@]}" =~ $1 ]]; then
             HAS_ERROR=(${HAS_ERROR[@]/$DELETE})
-            echo "Server $1 is now AVAILABLE!" | mail -s "PING server is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+            echo "Server $1 is now AVAILABLE!" | mail -s "PING server $1 is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
         fi
     fi
 

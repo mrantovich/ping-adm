@@ -2,8 +2,7 @@
 const servers = document.querySelector('.servers');
 
 async function fetchingServersStatus() {
-    //const response = await fetch("./server_status.json");
-    const response = await fetch("../server_status.json");
+    const response = await fetch("./server_status.json");
     return response.json();
 };
 
@@ -41,7 +40,7 @@ res.then((data) => handleServerData(data));
 servers.innerHTML = changableServerData;
 changableServerData = "";
 
-//setTimeout(function(){
-//    window.location.reload(1);
-//}, 6000);
+setTimeout(function(){
+    window.location.reload(1);
+}, 6000);
 
