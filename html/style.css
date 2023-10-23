@@ -64,6 +64,15 @@ html, body {
 
 .servers__name {
     padding: 1rem;
+    width: 100%;
+}
+
+.name__ok {
+    background: rgb(176, 226, 176)
+}
+
+.name__down {
+    background: rgb(211, 130, 130);
 }
 
 .servers__status {
@@ -88,6 +97,9 @@ html, body {
     }
     .servers__status {
         width: 100%;
+    }
+    .servers__name {
+        text-align: center;
     }
 }
 
