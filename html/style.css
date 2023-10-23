@@ -36,6 +36,8 @@ html, body {
     padding: 2rem;
     border: 0.1rem solid #000;
     margin-bottom: 3rem;
+    text-align: center;
+    background: #ccc;
 }
 
 .servers {
@@ -77,6 +79,16 @@ html, body {
 
 .servers__status.status__down {
     background: maroon;
+}
+
+@media (max-width: 768px) {
+    .servers__item {
+        font-size: 1.8rem;
+        flex-direction: column;
+    }
+    .servers__status {
+        width: 100%;
+    }
 }
 
 

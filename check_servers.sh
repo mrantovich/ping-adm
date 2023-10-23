@@ -2,7 +2,7 @@
 
 # НЕОБХОДИМЫЕ ПЕРЕМЕННЫЕ.
 # IP-адреса серверов, которые пингуются, добавлять через пробел внутри скобок.
-IP_ADDRESSES=("dsk-stolica.ru" "82.146.41.70" "192.168.1.22" "kkkkkkkk.ru") 
+IP_ADDRESSES=("dsk-stolica.ru" "82.146.41.70" "192.168.1.22") 
 # Для команды ping: пинговать один раз.
 COUNT=1
 # Таймаут задержки между вызовами основной функции. Для цикла.
@@ -11,14 +11,7 @@ TIMEOUT=5s
 # Нужен, чтобы слать уведомления по email.
 HAS_ERROR=()
 
-###
-
-# Шаблоны для формирования HTML-кода.
-TEMPLATE_SERVER_NAME='<div class="servers__item"><div class="servers__name">'
-TEMPLATE_SERVER_STATUS_OK='<div class="servers__status">'
-TEMPLATE_SERVER_STATUS_DOWN='<div class="servers__status status__down">'
-
-#
+# Для формирования данных, которые пишем в JSON, чтобы отображать в HTML.
 OUTPUT=""
 
 ###
@@ -32,35 +25,26 @@ function server_ping() {
     # и отправляем email с предупреждением.
     if [ "$result" -ne 0 ]; then
         OUTPUT+='{"server": "'$1'", "status": "down"},'
-        #OUTPUT+=$TEMPLATE_SERVER_NAME$1"</div>"$TEMPLATE_SERVER_STATUS_DOWN"DOWN</div></div>"
         if [[ " ${HAS_ERROR[@]} " =~ $1 ]]; then
             echo "No send mail"
         else
             HAS_ERROR+=($1)
-            #echo "Server $1 is DOWN!
-#PING command ends with error.
-#Please, check your server $1!" | mail -s "PING server error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+            echo "Server $1 is DOWN!
+PING command ends with error.
+Please, check your server $1!" | mail -s "PING server error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
         fi
     # Если команда ping завершилась успешно (код ноль),
     # то проверяем наличие сервера в массиве HAS_ERROR,
     # чтобы отправить email о том, что сервер снова доступен.
     else
         OUTPUT+='{"server": "'$1'", "status": "ok"},'
-        #OUTPUT+=$TEMPLATE_SERVER_NAME$1"</div>"$TEMPLATE_SERVER_STATUS_OK"OK</div></div>"
         DELETE=($1)
         if [[ " ${HAS_ERROR[@]}" =~ $1 ]]; then
             HAS_ERROR=(${HAS_ERROR[@]/$DELETE})
-            #echo "Server $1 is now AVAILABLE!" | mail -s "PING server is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+            echo "Server $1 is now AVAILABLE!" | mail -s "PING server is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
         fi
     fi
 
-    # Просто выводит массив HAS_ERROR в консоль.
-    # Для проверки. Можно удалить.
-    if [[ "$HAS_ERROR" ]]; then
-        echo ${HAS_ERROR[@]}
-    fi
-
-    #
 }
 
 # Цикл, запускающий функцию server_ping.
@@ -69,12 +53,19 @@ while true; do
     for IP in "${IP_ADDRESSES[@]}"; do
         server_ping $IP
     done
+
+    # Приводим сформированные данные к формату JSON.
+    # Обрезаем последний символ (запятую) и загоняем данные в квадратные скобки.
     FINOUTPUT=${OUTPUT::-1}
     FINOUTPUT='['$FINOUTPUT']'
-    echo $FINOUTPUT > server_status.json
+
+    # Пишем данные в файл. Локацию необходимо устанавливать.
+    # Доступ к этому файлу должен быть из JS-скрипта, выводящего данные.
+    echo $FINOUTPUT > /var/www/ping/server_status.json
+
+    # Очистка данных, чтобы писать заново при новом проходе цикла.
     OUTPUT=""
+
     sleep $TIMEOUT
 done
 
-#echo $OUTPUT > server_status.txt
-#OUTPUT=""
