@@ -2,11 +2,11 @@
 
 # НЕОБХОДИМЫЕ ПЕРЕМЕННЫЕ.
 # IP-адреса серверов, которые пингуются, добавлять через пробел внутри скобок.
-IP_ADDRESSES=("dsk-stolica.ru" "82.146.41.70" "192.168.1.22") 
+IP_ADDRESSES=("https://dsk-stolica.ru" "82.146.41.70" "192.168.1.22") 
 # Для команды ping: пинговать один раз.
 COUNT=1
 # Таймаут задержки между вызовами основной функции. Для цикла.
-TIMEOUT=5s
+TIMEOUT=30s
 # Массив, хранящий список серверов, которые пингуются с ошибкой.
 # Нужен, чтобы слать уведомления по email.
 HAS_ERROR=()
@@ -16,14 +16,13 @@ OUTPUT=""
 
 ###
 
-function server_ping() {
-    ping -c $COUNT $1 > /dev/null 2>&1;
-    result=$?
+function server_check() {
+    result=`curl -s -o /dev/null -w "%{http_code}" $1`
 
-    # Если команда ping закончилась с ошибкой (код не ноль),
+    # Если команда curl вернула ошибку (код возврата не 200),
     # то добавляем IP-адрес в массив HAS_ERROR
     # и отправляем email с предупреждением.
-    if [ "$result" -ne 0 ]; then
+    if [ "$result" -ne 200 ]; then
         OUTPUT+='{"server": "'$1'", "status": "down"},'
         if [[ " ${HAS_ERROR[@]} " =~ $1 ]]; then
             echo "No send mail"
@@ -33,7 +32,7 @@ function server_ping() {
 PING command ends with error.
 Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
         fi
-    # Если команда ping завершилась успешно (код ноль),
+    # Если команда curl завершилась (код ноль),
     # то проверяем наличие сервера в массиве HAS_ERROR,
     # чтобы отправить email о том, что сервер снова доступен.
     else
@@ -47,11 +46,11 @@ Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stoli
 
 }
 
-# Цикл, запускающий функцию server_ping.
+# Цикл, запускающий функцию server_check.
 # Задержка задается в переменной TIMEOUT (см. выше).
 while true; do
     for IP in "${IP_ADDRESSES[@]}"; do
-        server_ping $IP
+        server_check $IP
     done
 
     # Приводим сформированные данные к формату JSON.
