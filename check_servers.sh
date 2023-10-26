@@ -23,7 +23,7 @@ function server_check() {
     # то добавляем IP-адрес в массив HAS_ERROR
     # и отправляем email с предупреждением.
     if [ "$result" -ne 200 ]; then
-        OUTPUT+='{"server": "'$1'", "status": "down"},'
+        OUTPUT+='{"server": "'$1'", "status": "down", "req": "'$result'"},'
         if [[ " ${HAS_ERROR[@]} " =~ $1 ]]; then
             echo "No send mail"
         else
@@ -36,7 +36,7 @@ Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stoli
     # то проверяем наличие сервера в массиве HAS_ERROR,
     # чтобы отправить email о том, что сервер снова доступен.
     else
-        OUTPUT+='{"server": "'$1'", "status": "ok"},'
+        OUTPUT+='{"server": "'$1'", "status": "ok", "req": "'$result'"},'
         DELETE=($1)
         if [[ " ${HAS_ERROR[@]}" =~ $1 ]]; then
             HAS_ERROR=(${HAS_ERROR[@]/$DELETE})

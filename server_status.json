@@ -1,1 +1,1 @@
-[{"server": "dsk-stolica.ru", "status": "ok"},{"server": "82.146.41.70", "status": "ok"},{"server": "192.168.1.22", "status": "ok"},{"server": "kkkkkkkk.ru", "status": "down"}]
+[{"server": "dsk-stolica.ru", "status": "ok", "req": "200"},{"server": "82.146.41.70", "status": "ok", "req": "200"},{"server": "192.168.1.22", "status": "ok", "req": "200"},{"server": "kkkkkkkk.ru", "status": "down", "req": "403"}]

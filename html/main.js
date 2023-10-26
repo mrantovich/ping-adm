@@ -4,7 +4,8 @@ const servers = document.querySelector('.servers');
 // Получаем данные из JSON-файла, который формируется скриптом.
 // Возвращает JSON-объект.
 async function fetchingServersStatus() {
-    const response = await fetch("./server_status.json");
+    //const response = await fetch("./server_status.json");
+    const response = await fetch("../server_status.json");
     return response.json();
 };
 
@@ -21,12 +22,12 @@ let changableServerData = "";
 // Функция формирует HTML-код для отдельного сервера
 // в зависимости от статуса.
 // Возвращает сроку с HTML-кодом, который затем добавляется в changableServerData.
-function formServerEntry(name, status) {
+function formServerEntry(name, status, req) {
     if (status === "down"){
-        serverString = serverNameDown + name + closingTag + serverStatusDown + status + closingTag + closingTag;
+        serverString = serverNameDown + name + closingTag + serverStatusDown + status + ": " + req + closingTag + closingTag;
     }
     else {
-        serverString = serverNameOK + name + closingTag + serverStatusOK + status + closingTag + closingTag;
+        serverString = serverNameOK + name + closingTag + serverStatusOK + status + ": " + req + closingTag + closingTag;
     }
     return serverString;
 };
@@ -39,7 +40,8 @@ function handleServerData(serverData) {
     for (let i=0; i<arrayLength; i++) {
         let name = serverData[i]["server"];
         let status = serverData[i]["status"];
-        changableServerData += formServerEntry(name, status);
+        let req = serverData[i]["req"];
+        changableServerData += formServerEntry(name, status, req);
     };
     servers.innerHTML = changableServerData;
 };
@@ -55,7 +57,7 @@ changableServerData = "";
 
 // Цикл для автоматического обновления страницы,
 // чтобы были видны изменения статуса.
-setTimeout(function(){
-    window.location.reload(1);
-}, 6000);
+//setTimeout(function(){
+//    window.location.reload(1);
+//}, 6000);
 
