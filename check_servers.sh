@@ -2,7 +2,7 @@
 
 # НЕОБХОДИМЫЕ ПЕРЕМЕННЫЕ.
 # IP-адреса серверов, которые пингуются, добавлять через пробел внутри скобок.
-IP_ADDRESSES=("https://dsk-stolica.ru" "82.146.41.70" "192.168.1.22") 
+IP_ADDRESSES=("https://dsk-stolica.ru" "82.146.41.70" "192.168.1.22" "http://дск-столица.мой-бизнес.рф/index_.php") 
 # Для команды ping: пинговать один раз.
 COUNT=1
 # Таймаут задержки между вызовами основной функции. Для цикла.
@@ -23,14 +23,18 @@ function server_check() {
     # то добавляем IP-адрес в массив HAS_ERROR
     # и отправляем email с предупреждением.
     if [ "$result" -ne 200 ]; then
-        OUTPUT+='{"server": "'$1'", "status": "down", "req": "'$result'"},'
-        if [[ " ${HAS_ERROR[@]} " =~ $1 ]]; then
-            echo "No send mail"
-        else
-            HAS_ERROR+=($1)
-            echo "Server $1 is DOWN!
+        if [ "$result" -ne 401 ]; then
+            OUTPUT+='{"server": "'$1'", "status": "down", "req": "'$result'"},'
+            if [[ " ${HAS_ERROR[@]} " =~ $1 ]]; then
+                echo "No send mail"
+            else
+                HAS_ERROR+=($1)
+                echo "Server $1 is DOWN!
 PING command ends with error.
 Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+            fi
+        else
+            OUTPUT+='{"server": "'$1'", "status": "ok", "req": "'$result'"},'
         fi
     # Если команда curl завершилась (код ноль),
     # то проверяем наличие сервера в массиве HAS_ERROR,
@@ -61,7 +65,7 @@ while true; do
     # Пишем данные в файл. Локацию необходимо устанавливать.
     # Доступ к этому файлу должен быть из JS-скрипта, выводящего данные.
     echo $FINOUTPUT > /var/www/ping/server_status.json
-
+    
     # Очистка данных, чтобы писать заново при новом проходе цикла.
     OUTPUT=""
 

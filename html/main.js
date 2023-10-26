@@ -4,8 +4,7 @@ const servers = document.querySelector('.servers');
 // Получаем данные из JSON-файла, который формируется скриптом.
 // Возвращает JSON-объект.
 async function fetchingServersStatus() {
-    //const response = await fetch("./server_status.json");
-    const response = await fetch("../server_status.json");
+    const response = await fetch("./server_status.json");
     return response.json();
 };
 
@@ -46,18 +45,24 @@ function handleServerData(serverData) {
     servers.innerHTML = changableServerData;
 };
 
-// Получени и обработка данных через fetch-API.
-let res = fetchingServersStatus();
-res.then((data) => handleServerData(data));
 
-// Установка данных о серверах.
-// Очистка переменной, куда пишется код блока с данными о статусе серверов.
-servers.innerHTML = changableServerData;
-changableServerData = "";
+function updateData() {
+    // Получение и обработка данных через fetch-API.
+    let res = fetchingServersStatus();
+    res.then((data) => handleServerData(data));
 
-// Цикл для автоматического обновления страницы,
+    // Установка данных о серверах.
+    // Очистка переменной, куда пишется код блока с данными о статусе серверов.
+    servers.innerHTML = changableServerData;
+    changableServerData = "";
+}
+
+// Обновляем и пишем данные при первой загрузке страницы.
+updateData();
+
+// Цикл для обновления данных,
 // чтобы были видны изменения статуса.
-//setTimeout(function(){
-//    window.location.reload(1);
-//}, 6000);
+setInterval(function(){
+    updateData();
+}, 6000);
 
