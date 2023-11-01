@@ -2,7 +2,7 @@
 
 # НЕОБХОДИМЫЕ ПЕРЕМЕННЫЕ.
 # IP-адреса серверов, которые пингуются, добавлять через пробел внутри скобок.
-IP_ADDRESSES=("https://dsk-stolica.ru" "82.146.41.70" "192.168.1.22" "http://дск-столица.мой-бизнес.рф/index_.php") 
+IP_ADDRESSES=("https://dsk-stolica.ru" "82.146.41.70" "149.154.64.136") 
 # Таймаут задержки между вызовами основной функции. Для цикла.
 TIMEOUT=30s
 # Массив, хранящий список серверов, которые пингуются с ошибкой.
@@ -29,7 +29,7 @@ function server_check() {
                 HAS_ERROR+=($1)
                 echo "Server $1 is DOWN!
 PING command ends with error.
-Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stolica.ru rms@dsk-stolica.ru mrantovich@gmail.com
             fi
         else
             OUTPUT+='{"server": "'$1'", "status": "ok", "req": "'$result'"},'
@@ -42,7 +42,7 @@ Please, check your server $1!" | mail -s "PING server $1 error" -r rms@dsk-stoli
         DELETE=($1)
         if [[ " ${HAS_ERROR[@]}" =~ $1 ]]; then
             HAS_ERROR=(${HAS_ERROR[@]/$DELETE})
-            echo "Server $1 is now AVAILABLE!" | mail -s "PING server $1 is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru
+            echo "Server $1 is now AVAILABLE!" | mail -s "PING server $1 is OK" -r rms@dsk-stolica.ru rms@dsk-stolica.ru mrantovich@gmail.com
         fi
     fi
 
